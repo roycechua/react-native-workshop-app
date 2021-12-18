@@ -1,19 +1,24 @@
 import React, {FunctionComponent, useState} from "react";
-import {View, Text, StyleSheet, TextInput, Button} from "react-native";
+import {View, Text, StyleSheet, TextInput, Button, Alert} from "react-native";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { addNote } from "../redux/notesSlice";
 
-const AddNoteScreen: FunctionComponent = () => {
+const AddNoteScreen: FunctionComponent = (props) => {
     const [note, setNote] = useState("");
+    const dispatch = useDispatch();
 
     const handleAddNote = async () => {
         try {
-            const response = await axios.post("http://c35b-180-190-33-171.ngrok.io/notes", {
+            const response = await axios.post("https://18f4-180-190-33-171.ngrok.io/notes", {
                 data: {
                     note: note
                 }
             });
 
-            console.log(response.data)
+            dispatch(addNote(response.data.data))
+            Alert.alert("Add Note Status", response.data.message)
+            props.navigation.goBack()
         } catch(error) {
             console.log(error)
         }
