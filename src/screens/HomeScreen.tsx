@@ -5,13 +5,14 @@ import NoteItem from "../components/NoteItem";
 import { AntDesign } from "@expo/vector-icons";
 import Spacer from "../components/Spacer";
 import axios from "axios"
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-const HomeScreen: FunctionComponent = () => {
+const HomeScreen: FunctionComponent = (props) => {
 	const [data, setData] = useState([]);
 
 	const fetchNotes = () => {
 		console.log("Fetching notes")
-		axios.get("https://2464-180-190-44-156.ngrok.io")
+		axios.get("http://c35b-180-190-33-171.ngrok.io")
 		.then((response) => {
 			console.log(response.status)
 			setData(response.data)
@@ -38,7 +39,9 @@ const HomeScreen: FunctionComponent = () => {
 			<View style={{flexDirection:"row", alignItems: "center"}}>
 				<Text style={styles.headerText}>My Notes</Text>
 				<Spacer space={2}/>
-				<AntDesign name="pluscircle" size={24} color="black" />
+				<TouchableOpacity onPress={()=>{props.navigation.navigate("AddNote")}}>
+					<AntDesign name="pluscircle" size={24} color="black" />
+				</TouchableOpacity>
 			</View>
 			<Spacer space={5}/>
 			<FlatList 
