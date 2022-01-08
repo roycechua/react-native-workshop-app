@@ -8,27 +8,32 @@ import axios from "axios"
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteNote, setNote } from "../redux/notesSlice";
+import constants from "../utils/constants";
 
 const HomeScreen: FunctionComponent = (props) => {
 	const notes = useSelector(state => state.notes.notes)
 	const dispatch = useDispatch()
 
-	const fetchNotes = () => {
-		console.log("Fetching notes")
-		axios.get("https://18f4-180-190-33-171.ngrok.io")
-		.then((response) => {
-			console.log(response.status)
-			dispatch(setNote(response.data))
-		}).catch((error) => {
+	const fetchNotes = async () => {
+		try {
+			console.log("Fetching notes")
+			const response = await axios.get(`${constants.BASE_URL}`)
+			if(response.status == 200) {
+				console.log(response.status)
+				dispatch(setNote(response.data))
+			}
+		} catch (error) {
 			Alert.alert("request status", JSON.stringify(error))
-		})
+		}
 	}
 
 	const handleDelete = async (id: number) => {
 		try {
-			const response = axios.delete(`https://18f4-180-190-33-171.ngrok.io/notes/${id}`);
-			Alert.alert("Delete Status", "Delete Success")
-			dispatch(deleteNote(id))
+			const response = await axios.delete(`${constants.BASE_URL}/notes/${id}`);
+			if(response.status == 200) {
+				Alert.alert("Delete Status", "Delete Success")
+				dispatch(deleteNote(id))
+			}
 		} catch (error) {
 			Alert.alert("Delete Status", "Deletion failed")
 		}
@@ -39,12 +44,11 @@ const HomeScreen: FunctionComponent = (props) => {
 	}, [])
 
 	const renderItem = ({item}) => (
-		<TouchableOpacity onPress={()=>{props.navigation.navigate("NoteDetails", {id:item.id})}}>
-			<NoteItem 
-				note={item.note}
-				onDelete={()=>{handleDelete(item.id)}}
-			/>
-		</TouchableOpacity>
+		<NoteItem 
+			note={item.note}
+			onDelete={()=>{handleDelete(item.id)}}
+			onGoToNoteDetail={()=>{props.navigation.navigate("NoteDetails", {id:item.id})}}
+		/>
 	)
 
 	const renderItemSeparatorComponent = () =><Spacer space={5}/>

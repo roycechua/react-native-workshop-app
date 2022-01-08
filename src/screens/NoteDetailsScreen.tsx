@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { FunctionComponent, useState } from "react";
-import {View, Text, StyleSheet, TextInput, Button} from "react-native";
+import {View, Text, StyleSheet, TextInput, Button, Alert} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { updateNote } from "../redux/notesSlice";
+import constants from "../utils/constants";
 
 const NoteDetailsScreen: FunctionComponent = (props) => {
     const {navigation, route} = props;
@@ -12,10 +14,22 @@ const NoteDetailsScreen: FunctionComponent = (props) => {
 
     const [newNote, setNewNote] = useState(data.note)
 
-    const handleUpdate = () => {
-        // axios.put(`/notes/${id}`)
-        // dispatch 
-        navigation.goBack()
+    const handleUpdate = async () => {
+        try {
+            const response = await axios.put(`${constants.BASE_URL}/notes/${id}`, {
+                data: {
+                    id: id,
+                    note: newNote
+                }
+            })
+            if(response.status==200) {
+                Alert.alert("Update Success", "Update Successful")
+                dispatch(updateNote(response.data.data))
+                navigation.goBack()
+            }
+        } catch (error) {
+            Alert.alert("Update Error", "Error encountered while updating the data")
+        }
     }
 
     return (

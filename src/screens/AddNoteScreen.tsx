@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, TextInput, Button, Alert} from "react-native";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addNote } from "../redux/notesSlice";
+import constants from "../utils/constants";
 
 const AddNoteScreen: FunctionComponent = (props) => {
     const [note, setNote] = useState("");
@@ -10,7 +11,7 @@ const AddNoteScreen: FunctionComponent = (props) => {
 
     const handleAddNote = async () => {
         try {
-            const response = await axios.post("https://18f4-180-190-33-171.ngrok.io/notes", {
+            const response = await axios.post(`${constants.BASE_URL}/notes`, {
                 data: {
                     note: note
                 }
